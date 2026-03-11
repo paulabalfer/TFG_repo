@@ -8,7 +8,7 @@
 
 Este proyecto explora la automatización del reconocimiento y clasificación de posiciones corporales reglamentarias en **natación artística (sincronizada)** mediante técnicas de visión por computador e inteligencia artificial.
 
-El objetivo principal es comparar distintos enfoques de clasificación de imágenes, desde modelos de aprendizaje profundo hasta sistemas basados en coordenadas de pose, evaluando su viabilidad para identificar automáticamente figuras de natación artística a partir de fotografías. Se incluye además un análisis de interpretabilidad mediante **Grad-CAM** para entender qué regiones de la imagen son determinantes en la clasificación.
+El objetivo principal es comparar distintos enfoques de clasificación de imágenes, desde modelos de aprendizaje profundo hasta sistemas basados en coordenadas de pose y modelos de lenguaje visual con fine-tuning eficiente, evaluando su viabilidad para identificar automáticamente figuras de natación artística a partir de fotografías. Se incluye además un análisis de interpretabilidad mediante **Grad-CAM** para entender qué regiones de la imagen son determinantes en la clasificación.
 
 ---
 
@@ -52,6 +52,9 @@ TFG_repo/
 ├── Modelo preentrenado basado en coordenadas/    # Enfoque 2: clasificación por keypoints
 │   └── MediaPipe_Pose_Classifier.ipynb
 │
+├── Fine-tunning de vLLM pequeño/                 # Enfoque 3: fine-tuning de modelo visión-lenguaje
+│   └── Fine_tuning_SmolVLM_500M.ipynb
+│
 ├── requirements.txt                              # Toda librería requerida para la ejecución del proyecto
 └── README.md
 ```
@@ -84,6 +87,15 @@ Notebook que implementa un pipeline alternativo basado en **estimación de poses
 
 Este enfoque es más ligero computacionalmente y agnóstico al fondo o iluminación de la imagen.
 
+### `Fine-tunning de vLLM pequeño/`
+
+Notebook que adapta un **modelo de lenguaje visual pequeño (vLLM)** a la tarea de clasificación mediante fine-tuning eficiente con LoRA:
+
+- **Modelo base**: `HuggingFaceTB/SmolVLM-500M-Instruct` (~500 M parámetros), que combina un encoder visual SigLIP-400M con el LM decoder SmolLM2-360M.
+- **Estrategia de clasificación**: elección múltiple por logits — se extraen los logits del modelo sobre los tokens `A`–`E` en la posición de respuesta, sin generación libre de texto.
+- **Fine-tuning**: LoRA aplicado sobre las proyecciones de atención (`q_proj`, `v_proj`), actualizando solo ~1 % de los parámetros totales.
+- **Primera prueba**: subconjunto de 20 imágenes por clase (100 en total) para validar el pipeline antes de escalar al dataset completo.
+
 ---
 
 ## Tecnologías y dependencias principales
@@ -94,6 +106,7 @@ Este enfoque es más ligero computacionalmente y agnóstico al fondo o iluminaci
 | Deep Learning | TensorFlow / Keras, PyTorch |
 | Visión-Lenguaje | CLIP (`transformers`, HuggingFace) |
 | Estimación de pose | MediaPipe |
+| Fine-tuning eficiente (vLLM) | SmolVLM-500M-Instruct, PEFT / LoRA |
 | Procesamiento de imagen | OpenCV, Pillow |
 | ML clásico | scikit-learn (Random Forest, SVM) |
 | Datos | pandas, NumPy, SciPy |
