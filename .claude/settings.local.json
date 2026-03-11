@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./TFG_ENV/Scripts/python.exe -c \"import transformers; print\\(transformers.__version__\\)\")",
+      "Bash(python -c \"import transformers; print\\(transformers.__version__\\)\")",
+      "Bash(pip show:*)",
+      "Bash(dir \"c:\\\\paula\\\\OTROS\\\\TFG_repo\\\\TFG_ENV\\\\Lib\\\\site-packages\\\\transformers\\\\models\" /B)",
+      "Bash(findstr -i \"idefics\\\\|smol\\\\|vlm\\\\|vision\")"
+    ]
+  }
+}

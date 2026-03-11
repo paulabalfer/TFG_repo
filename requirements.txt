@@ -16,7 +16,7 @@ tf-keras>=2.18.0
 # --- Deep Learning: PyTorch + CLIP (Modelos Naïve) ---
 torch>=2.4.0
 torchvision>=0.19.0
-transformers>=4.44.0
+transformers>=4.49.0
 
 # --- Visión por computador ---
 opencv-python==4.13.0.92
