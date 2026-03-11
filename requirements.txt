@@ -53,5 +53,5 @@ jupyter-client==8.8.0
 jupyter-core==5.9.1
 
 # --- vLLMs ---
-peft==0.12.0 
-accelerate==0.34.0
+peft==0.18.1
+accelerate==1.13.0
