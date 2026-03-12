@@ -1,0 +1,25 @@
+# ── Claude Code ───────────────────────────────────────────────────────────────
+.claude/
+
+# ── Entorno virtual Python ────────────────────────────────────────────────────
+TFG_ENV/
+
+# ── Archivos temporales de pip ────────────────────────────────────────────────
+0.34.0
+4.49.0
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Modelos descargados (pesados, se regeneran en primera ejecución) ──────────
+*.task
+*.pkl
+
+# ── Sistema operativo ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
