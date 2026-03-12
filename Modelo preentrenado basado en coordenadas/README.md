@@ -34,24 +34,55 @@ Se utiliza el modelo **MediaPipe PoseLandmarker Heavy** para detectar y extraer 
 
 > La variante *heavy* ofrece mayor precisión en la detección de poses complejas o parcialmente ocluidas, a costa de un mayor coste computacional respecto a las variantes *lite* y *full*.
 
-### Etapa 2: Clasificación con ML Clásico
+### Etapa 2: Extracción de características geométricas
 
-Sobre los vectores de coordenadas extraídos se entrenan y evalúan dos clasificadores:
+En lugar de usar las coordenadas brutas de los 33 landmarks, se calculan **17 características geométricas** más informativas y compactas:
 
-| Clasificador | Descripción |
+| Grupo | Características |
 |---|---|
-| **Random Forest** | Ensemble de árboles de decisión; robusto a features irrelevantes y con baja varianza |
-| **SVM** (Support Vector Machine) | Clasificador de margen máximo; efectivo en espacios de alta dimensión con pocos ejemplos |
+| Distancias | Hombros, caderas, cabeza-cadera, rodilla-cadera (izq/der), tobillo-cadera (izq/der) |
+| Ratios | Cadera-tobillo / hombro-cadera (izq/der) |
+| Ángulos | Pierna izq/der (cadera-rodilla-tobillo), torso (cadera-hombro-nariz) |
+| Posición global | Y medio, Z medio del cuerpo |
+| Asimetría | Diferencia Y entre hombros, diferencia Y entre caderas |
+| Calidad | Visibilidad media de landmarks |
 
-Ambos modelos son entrenados con validación cruzada sobre el dataset de natación artística y evaluados mediante métricas estándar (accuracy, precisión, recall, F1, matriz de confusión).
+### Etapa 2b: Análisis exploratorio de la matriz de características
+
+Antes del entrenamiento se generan tres visualizaciones:
+
+- **Boxplots** — distribución de cada característica por clase (sin outliers extremos).
+- **Heatmap de correlación** — correlación de Pearson entre las 17 características.
+- **PCA 2D** — proyección de todas las muestras en dos componentes principales para evaluar la separabilidad visual de las clases.
+
+### Etapa 3: Clasificación con Random Forest
+
+El clasificador principal es un **Random Forest** (200 árboles, `max_depth=20`) entrenado sobre el conjunto de entrenamiento (80 %) y evaluado en el conjunto de test (20 %) mediante accuracy, un reporte de clasificación en formato heatmap (precision, recall y F1 por clase) y una matriz de confusión visual.
+
+---
+
+## Salidas generadas
+
+| Fichero | Contenido |
+|---|---|
+| `pose_classifier_model.pkl` | Modelo Random Forest entrenado |
+| `pose_classifier_scaler.pkl` | StandardScaler ajustado al conjunto de entrenamiento |
+| `label_encoder.pkl` | LabelEncoder con las 5 clases |
+| `classification_results.pkl` | Métricas y matriz de confusión en formato pickle |
+| `feature_boxplots_by_class.png` | Boxplots de las 17 características por clase |
+| `feature_correlation_heatmap.png` | Heatmap de correlación entre características |
+| `feature_pca_2d.png` | Proyección PCA 2D de todas las muestras |
+| `confusion_matrix.png` | Matriz de confusión del test set |
+| `classification_report_heatmap.png` | Heatmap de precision / recall / F1 por clase |
+| `confidence_by_class.png` | Confianza media del modelo en aciertos y fallos por clase |
 
 ---
 
 ## Ventajas de este enfoque
 
-- **Invarianza al fondo e iluminación**: el clasificador solo ve coordenadas de articulaciones, no píxeles.
+- **Invarianza al fondo e iluminación**: el clasificador solo ve características geométricas, no píxeles.
 - **Bajo coste computacional**: los clasificadores clásicos son órdenes de magnitud más ligeros que una CNN.
-- **Interpretabilidad**: es posible analizar qué coordenadas (articulaciones) son más discriminativas mediante la importancia de características del Random Forest.
+- **Interpretabilidad**: es posible analizar qué características son más discriminativas mediante la importancia de características del Random Forest.
 - **Menor requisito de datos**: los modelos de ML clásico generalizan bien con conjuntos pequeños cuando las features son informativas.
 
 ---
@@ -61,7 +92,7 @@ Ambos modelos son entrenados con validación cruzada sobre el dataset de nataci�
 | Componente | Librería / Herramienta |
 |---|---|
 | Estimación de pose | MediaPipe (`mediapipe`) |
-| Clasificadores | scikit-learn (Random Forest, SVM) |
+| Clasificador | scikit-learn (Random Forest) |
 | Procesamiento de imagen | OpenCV, Pillow |
 | Cálculo numérico | NumPy, pandas |
 | Visualización | matplotlib |
