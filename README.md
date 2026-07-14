@@ -128,7 +128,7 @@ Por dependencias del proyecto, es necesario trabajar con **Python 3.11** para qu
 ```bash
 # 1. Clonar el repositorio
 git clone <URL-del-repositorio>
-cd TFG_repo
+cd TFG-De-la-imagen-a-la-puntuacion-en-natacion-artistica
 
 # 2. Instalar todas las dependencias
 pip install -r requirements.txt
